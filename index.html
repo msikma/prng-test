@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>lol</title>
+  <style>
+  body {
+    max-width: 50em;
+  }
+  form {
+    margin-top: 1em;
+  }
+  form p.question::before {
+    display: inline-block;
+    margin-right: 1ch;
+    color: #F7605F;
+    content: '*';
+  }
+  form textarea {
+    width: 50ch;
+    height: 10em;
+  }
+  form #result {
+    background-color: #F0F7FF;
+    border-left: 8px solid rgb(38, 94, 212);
+    padding: 1em;
+    margin: 1em 0;
+  }
+  form #result {
+    font-size: 1.5rem;
+  }
+  form #result p {
+    margin: 0 0 1em 0;
+  }
+  form #result .answer {
+    font-size: 1.875rem;
+  }
+  form #result #value::before {
+    content: '- ';
+    color: black;
+  }
+  form #result #value {
+    color: rgb(231, 80, 79);
+    font-weight: 700;
+    font-style: italic;
+  }
+  form #result #value.type-0 {
+    color: rgb(231, 80, 79);
+  }
+  form #result #value.type-1 {
+    color: #222222;
+  }
+  form #result #value.type-2 {
+    color: rgb(38, 94, 212);
+  }
+  .disclaimer {
+    background: #FFF9E8;
+    border: 1px solid #FFD45D;
+    padding: 0.5em;
+  }
+  </style>
+</head>
+
+<body>
+  <h1>Ask Dada</h1>
+  <p>Dada is a computational model for descriptive ethics, i.e., people’s moral judgments on a variety of everyday situations. Actually no, it's complete nonsense and all you have to do is view source to see what's up.</p>
+  <div class="disclaimer">Dada demo is intended to study the promises and limitations of machine ethics and norms through the lens of descriptive ethics. Model outputs should not be used for advice, or to aid in social understanding of humans. The model’s output does not necessarily reflect the views and opinions of the authors and their associated affiliations.</div>
+  <form action="index.html" method="get" id="ponder">
+    <p class="question">Input a <b>situation</b> for Dada to ponder:</p>
+    <textarea placeholder="Type your stupid moral question here and the $100,000,000 deep learning AI will tell you what's what"></textarea><br>
+    <button>Ponder</button>
+    <div id="result" style="display: none;">
+      <p>Dada says:</p>
+      <div class="answer">
+        <q id="reflect">Robbing a bank</q>
+        <div id="value">It's wrong</div>
+      </div>
+    </div>
+    <script>
+const xmur3 = str => {
+  let h = 1779033703 ^ str.length
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353)
+    h = h << 13 | h >>> 19
+  }
+  return () => {
+    h = Math.imul(h ^ h >>> 16, 2246822507)
+    h = Math.imul(h ^ h >>> 13, 3266489909)
+    return (h ^= h >>> 16) >>> 0
+  }
+}
+
+const sfc32 = (a, b, c, d) => () => {
+  a >>>= 0
+  b >>>= 0
+  c >>>= 0
+  d >>>= 0 
+  let t = (a + b) | 0
+  a = b ^ b >>> 9
+  b = c + (c << 3) | 0
+  c = (c << 21 | c >>> 11)
+  d = d + 1 | 0
+  t = t + d | 0
+  c = c + t | 0
+  return (t >>> 0) / 4294967296
+}
+
+const randInt = (rand, min, max) => () => {
+  return Math.floor(rand() * (max - min) + min)
+}
+
+const ponder = value => {
+  const seed = xmur3(value)
+  const prng = sfc32(seed(), seed(), seed(), seed())
+  const response = randInt(prng, 0, 100)()
+  const type = randInt(prng, 0, 3)()
+  return [type, response]
+}
+
+const form = document.querySelector('#ponder')
+const answers = [
+  [
+    `It's wrong`,
+    `It's murder`
+  ],
+  [
+    `It's okay`
+  ],
+  [
+    `It's acceptable`,
+    `It's good`,
+    `It is good`,
+    `It's helpful`
+  ]
+]
+form.addEventListener('submit', ev => {
+  ev.preventDefault()
+  const input = document.querySelector('#ponder textarea')
+  const result = document.querySelector('#result')
+  const reflect = document.querySelector('#reflect')
+  const value = document.querySelector('#value')
+  const [type, response] = ponder(input.value)
+  
+  const typeStrings = answers[type]
+  const responseValue = typeStrings[response % typeStrings.length]
+  result.style.display = 'block'
+  reflect.innerHTML = input.value
+  value.classList.remove(...answers.map((_, n) => `type-${n}`))
+  value.classList.add(`type-${type}`)
+  value.innerHTML = responseValue
+}, false)
+    </script>
+  </form>
+</body>
+</html>
